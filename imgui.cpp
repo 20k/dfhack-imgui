@@ -1760,21 +1760,26 @@ IMGUI_API ImU32 ImAlphaBlendColors(ImU32 col_a, ImU32 col_b)
 
 ImVec4 ImGui::ColorConvertU32ToFloat4(ImU32 in)
 {
-    float s = 1.0f / 255.0f;
     return ImVec4(
-        ((in >> IM_COL32_R_SHIFT) & 0xFF) * s,
-        ((in >> IM_COL32_G_SHIFT) & 0xFF) * s,
-        ((in >> IM_COL32_B_SHIFT) & 0xFF) * s,
-        ((in >> IM_COL32_A_SHIFT) & 0xFF) * s);
+        ((in >> IM_COL32_R_SHIFT) & 0xFF),
+        ((in >> IM_COL32_G_SHIFT) & 0xFF),
+        ((in >> IM_COL32_B_SHIFT) & 0xFF),
+        ((in >> IM_COL32_A_SHIFT) & 0xFF));
 }
 
 ImU32 ImGui::ColorConvertFloat4ToU32(const ImVec4& in)
 {
+    //{fg, bg, bold, 1.f}
+    ImU32 r = in.x;
+    ImU32 g = in.y;
+    ImU32 b = in.z;
+    ImU32 a = in.w;
+
     ImU32 out;
-    out  = ((ImU32)IM_F32_TO_INT8_SAT(in.x)) << IM_COL32_R_SHIFT;
-    out |= ((ImU32)IM_F32_TO_INT8_SAT(in.y)) << IM_COL32_G_SHIFT;
-    out |= ((ImU32)IM_F32_TO_INT8_SAT(in.z)) << IM_COL32_B_SHIFT;
-    out |= ((ImU32)IM_F32_TO_INT8_SAT(in.w)) << IM_COL32_A_SHIFT;
+    out  = r << IM_COL32_R_SHIFT;
+    out |= g << IM_COL32_G_SHIFT;
+    out |= b << IM_COL32_B_SHIFT;
+    out |= a << IM_COL32_A_SHIFT;
     return out;
 }
 
