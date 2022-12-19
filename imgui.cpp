@@ -7360,8 +7360,8 @@ bool ImGui::ItemAdd(const ImRect& bb, ImGuiID id, const ImRect* nav_bb_arg)
                     if(!window->NavIsBlocked)
                          NavProcessItem(window, nav_bb_arg ? *nav_bb_arg : bb, id);
 
-       // if (window->NavHasSeenSelected && window->NavHasGate)
-       //     window->NavIsBlocked = true;
+        if (window->NavHasSeenSelected && window->NavHasGate && g.NavId == window->NavBlocker)
+            window->NavIsBlocked = true;
 
         // [DEBUG] Item Picker tool, when enabling the "extended" version we perform the check in ItemAdd()
 #ifdef IMGUI_DEBUG_TOOL_ITEM_PICKER_EX
