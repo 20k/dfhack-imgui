@@ -2841,8 +2841,8 @@ void ImGui::RenderNavHighlight(const ImRect& bb, ImGuiID id, ImGuiNavHighlightFl
     display_rect.ClipWith(window->ClipRect);
     if (flags & ImGuiNavHighlightFlags_TypeDefault)
     {
-        const float THICKNESS = 2.0f;
-        const float DISTANCE = 3.0f + THICKNESS * 0.5f;
+        const float THICKNESS = 0.5f;
+        const float DISTANCE = 1.0f + THICKNESS * 0.5f;
         display_rect.Expand(ImVec2(DISTANCE, DISTANCE));
         bool fully_visible = window->ClipRect.Contains(display_rect);
         if (!fully_visible)
@@ -8586,9 +8586,26 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
     float dist_box = ImFabs(dbx) + ImFabs(dby);
 
     // Compute distance between centers (this is off by a factor of 2, but we only compare center distances with each other so it doesn't matter)
-    float dcx = (cand.Min.x + cand.Max.x) - (curr.Min.x + curr.Max.x);
-    float dcy = (cand.Min.y + cand.Max.y) - (curr.Min.y + curr.Max.y);
+    float dcx = (cand.Min.x + cand.Max.x) / 2 - (curr.Min.x + curr.Max.x) / 2;
+    float dcy = (cand.Min.y + cand.Max.y) / 2 - (curr.Min.y + curr.Max.y) / 2;
     float dist_center = ImFabs(dcx) + ImFabs(dcy); // L1 metric (need this for our connectedness guarantee)
+
+    //ImSwap(dbx, dcx);
+    //ImSwap(dby, dcy);
+    //ImSwap(dist_box, dist_center);
+
+    ImDrawList* draw_list = GetForegroundDrawList(window);
+    //draw_list->AddRect(curr.Min, curr.Max, IM_COL32(255, 200, 0, 100));
+
+    //if (IsMouseHoveringRect(cand.Min, cand.Max))
+    {
+        // draw_list->AddText({ (cand.Min.x + cand.Max.x) / 2.f, (cand.Min.y + cand.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), "G");
+
+         //draw_list->AddText({ (curr.Min.x + curr.Max.x) / 2.f, (curr.Min.y + curr.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), "C");
+    }
+
+
+    float max_penalty = 40;
 
     // Determine which quadrant of 'curr' our candidate item 'cand' lies in based on distance
     ImGuiDir quadrant;
@@ -8615,8 +8632,47 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
         quadrant = (window->DC.LastItemId < g.NavId) ? ImGuiDir_Left : ImGuiDir_Right;
     }
 
-#if IMGUI_DEBUG_NAV_SCORING
+    #if IMGUI_DEBUG_NAV_SCORING
     char buf[128];
+
+    if (IsMouseHoveringRect(cand.Min, cand.Max))
+    {
+        ImFormatString(buf, IM_ARRAYSIZE(buf), "dbox (%.2f,%.2f->%.4f)\ndcen (%.2f,%.2f->%.4f)\nd (%.2f,%.2f->%.4f)\nnav %c, quadrant %c", dbx, dby, dist_box, dcx, dcy, dist_center, dax, day, dist_axial, "WENS"[g.NavMoveDir], "WENS"[quadrant]);
+        ImDrawList* draw_list = GetForegroundDrawList(window);
+
+        draw_list->AddRect(cand.Min, cand.Max, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)));
+        draw_list->AddText({ (cand.Min.x + cand.Max.x) / 2.f, (cand.Min.y + cand.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), buf);
+    }
+    #endif
+
+    /*float dirx = 0;
+    float diry = 0;
+
+    float penalty = 0.f;
+
+    if (quadrant == ImGuiDir_Right)
+        dirx = 1;
+
+    if (quadrant == ImGuiDir_Left)
+        dirx = -1;
+
+    if (quadrant == ImGuiDir_Up)
+        diry = -1;
+
+    if (quadrant == ImGuiDir_Down)
+        diry = 1;
+
+    float ldax = dax / sqrt(dax * dax + day * day);
+    float lday = day / sqrt(dax * dax + day * day);
+
+    penalty = (1 - (dirx * ldax + diry * lday)) * max_penalty;
+
+    dist_box += penalty;
+    dist_center += penalty;
+    dist_axial += penalty;*/
+
+#if IMGUI_DEBUG_NAV_SCORING
+    /*char buf[128];
     if (IsMouseHoveringRect(cand.Min, cand.Max))
     {
         ImFormatString(buf, IM_ARRAYSIZE(buf), "dbox (%.2f,%.2f->%.4f)\ndcen (%.2f,%.2f->%.4f)\nd (%.2f,%.2f->%.4f)\nnav %c, quadrant %c", dbx, dby, dist_box, dcx, dcy, dist_center, dax, day, dist_axial, "WENS"[g.NavMoveDir], "WENS"[quadrant]);
@@ -8636,7 +8692,7 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
             draw_list->AddRectFilled(cand.Min, cand.Max, IM_COL32(255, 0, 0, 200));
             draw_list->AddText(g.IO.FontDefault, 13.0f, cand.Min, IM_COL32(255, 255, 255, 255), buf);
         }
-    }
+    }*/
 #endif
 
     // Is it in the quadrant we're interesting in moving to?
@@ -9178,8 +9234,8 @@ static void ImGui::NavUpdate()
     ImRect nav_rect_rel = g.NavWindow ? g.NavWindow->NavRectRel[g.NavLayer] : ImRect(0, 0, 0, 0);
     g.NavScoringRect = g.NavWindow ? ImRect(g.NavWindow->Pos + nav_rect_rel.Min, g.NavWindow->Pos + nav_rect_rel.Max) : ImRect(0, 0, 0, 0);
     g.NavScoringRect.TranslateY(nav_scoring_rect_offset_y);
-    g.NavScoringRect.Min.x = ImMin(g.NavScoringRect.Min.x + 1.0f, g.NavScoringRect.Max.x);
-    g.NavScoringRect.Max.x = g.NavScoringRect.Min.x;
+    g.NavScoringRect.Min.x = ImMin(g.NavScoringRect.Min.x + 0.0001f, g.NavScoringRect.Max.x);
+    //g.NavScoringRect.Max.x = g.NavScoringRect.Min.x;
     IM_ASSERT(!g.NavScoringRect.IsInverted()); // Ensure if we have a finite, non-inverted bounding box here will allows us to remove extraneous ImFabs() calls in NavScoreItem().
     //GetForegroundDrawList()->AddRect(g.NavScoringRectScreen.Min, g.NavScoringRectScreen.Max, IM_COL32(255,200,0,255)); // [DEBUG]
     g.NavScoringCount = 0;
