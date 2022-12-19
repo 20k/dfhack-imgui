@@ -3302,6 +3302,13 @@ void ImGui::MemFree(void* ptr)
     return GImAllocatorFreeFunc(ptr, GImAllocatorUserData);
 }
 
+void ImGui::AddNavGate()
+{
+    //so. The next item is allowed to be nav'd to, but not any after
+    ImGui::GetCurrentWindow()->NavHasGate = true;
+    ImGui::GetCurrentWindow()->NavBlocker = ImGui::GetItemID();
+}
+
 const char* ImGui::GetClipboardText()
 {
     ImGuiContext& g = *GImGui;
@@ -6290,6 +6297,14 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
         window->SkipItems = skip_items;
     }
 
+    if (first_begin_of_the_frame)
+    {
+        window->NavIsBlocked = false;
+        window->NavHasGate = false;
+        window->NavHasSeenSelected = false;
+        window->NavBlocker = 0;
+    }
+
     return !window->SkipItems;
 }
 
@@ -7335,11 +7350,18 @@ bool ImGui::ItemAdd(const ImRect& bb, ImGuiID id, const ImRect* nav_bb_arg)
         //      to reach unclipped widgets. This would work if user had explicit scrolling control (e.g. mapped on a stick).
         // We intentionally don't check if g.NavWindow != NULL because g.NavAnyRequest should only be set when it is non null.
         // If we crash on a NULL g.NavWindow we need to fix the bug elsewhere.
+        if (g.NavId == id)
+            window->NavHasSeenSelected = true;
+
         window->DC.NavLayerActiveMaskNext |= (1 << window->DC.NavLayerCurrent);
         if (g.NavId == id || g.NavAnyRequest)
             if (g.NavWindow->RootWindowForNav == window->RootWindowForNav)
                 if (window == g.NavWindow || ((window->Flags | g.NavWindow->Flags) & ImGuiWindowFlags_NavFlattened))
-                    NavProcessItem(window, nav_bb_arg ? *nav_bb_arg : bb, id);
+                    if(!window->NavIsBlocked)
+                         NavProcessItem(window, nav_bb_arg ? *nav_bb_arg : bb, id);
+
+       // if (window->NavHasSeenSelected && window->NavHasGate)
+       //     window->NavIsBlocked = true;
 
         // [DEBUG] Item Picker tool, when enabling the "extended" version we perform the check in ItemAdd()
 #ifdef IMGUI_DEBUG_TOOL_ITEM_PICKER_EX
