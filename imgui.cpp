@@ -8626,9 +8626,6 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
          //draw_list->AddText({ (curr.Min.x + curr.Max.x) / 2.f, (curr.Min.y + curr.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), "C");
     }
 
-
-    float max_penalty = 40;
-
     // Determine which quadrant of 'curr' our candidate item 'cand' lies in based on distance
     ImGuiDir quadrant;
     float dax = 0.0f, day = 0.0f, dist_axial = 0.0f;
@@ -8654,20 +8651,11 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
         quadrant = (window->DC.LastItemId < g.NavId) ? ImGuiDir_Left : ImGuiDir_Right;
     }
 
-    #if IMGUI_DEBUG_NAV_SCORING
-    char buf[128];
+#define NAV_PENALTY
+#ifdef NAV_PENALTY
+    float max_penalty = 40;
 
-    if (IsMouseHoveringRect(cand.Min, cand.Max))
-    {
-        ImFormatString(buf, IM_ARRAYSIZE(buf), "dbox (%.2f,%.2f->%.4f)\ndcen (%.2f,%.2f->%.4f)\nd (%.2f,%.2f->%.4f)\nnav %c, quadrant %c", dbx, dby, dist_box, dcx, dcy, dist_center, dax, day, dist_axial, "WENS"[g.NavMoveDir], "WENS"[quadrant]);
-        ImDrawList* draw_list = GetForegroundDrawList(window);
-
-        draw_list->AddRect(cand.Min, cand.Max, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)));
-        draw_list->AddText({ (cand.Min.x + cand.Max.x) / 2.f, (cand.Min.y + cand.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), buf);
-    }
-    #endif
-
-    /*float dirx = 0;
+    float dirx = 0;
     float diry = 0;
 
     float penalty = 0.f;
@@ -8691,7 +8679,22 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
 
     dist_box += penalty;
     dist_center += penalty;
-    dist_axial += penalty;*/
+    dist_axial += penalty;
+#endif
+
+
+    #if IMGUI_DEBUG_NAV_SCORING
+    char buf[128];
+
+    if (IsMouseHoveringRect(cand.Min, cand.Max))
+    {
+        ImFormatString(buf, IM_ARRAYSIZE(buf), "dbox (%.2f,%.2f->%.4f)\ndcen (%.2f,%.2f->%.4f)\nd (%.2f,%.2f->%.4f)\nnav %c, quadrant %c", dbx, dby, dist_box, dcx, dcy, dist_center, dax, day, dist_axial, "WENS"[g.NavMoveDir], "WENS"[quadrant]);
+        ImDrawList* draw_list = GetForegroundDrawList(window);
+
+        draw_list->AddRect(cand.Min, cand.Max, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)));
+        draw_list->AddText({ (cand.Min.x + cand.Max.x) / 2.f, (cand.Min.y + cand.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), buf);
+    }
+    #endif
 
 #if IMGUI_DEBUG_NAV_SCORING
     /*char buf[128];
