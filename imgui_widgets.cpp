@@ -833,7 +833,7 @@ bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos)
     ImVec2 center = bb.GetCenter();
     if (hovered || held) {
         //window->DrawList->AddCircleFilled(center, g.FontSize * 0.5f + 1.0f, bg_col, 12);
-        window->DrawList->AddCircleFilled(center + ImVec2(1.0, 0), 0.1f, bg_col, 12);
+        window->DrawList->AddCircleFilled(center, 0.1f, bg_col, 12);
     }
     RenderArrow(window->DrawList, bb.Min + g.Style.FramePadding, text_col, window->Collapsed ? ImGuiDir_Right : ImGuiDir_Down, 1.0f);
 
