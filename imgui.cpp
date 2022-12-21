@@ -2803,8 +2803,8 @@ void ImGui::RenderFrame(ImVec2 p_min, ImVec2 p_max, ImU32 fill_col, bool border,
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
     //window->DrawList->AddRectFilled(p_min, p_max, fill_col, rounding);
-    p_min = p_min + ImVec2(1.0, 0.0);
-    window->DrawList->AddRectFilled(p_min, p_max-ImVec2(+0.1,0.1), fill_col, rounding);
+    //p_min = p_min + ImVec2(1.0, 0.0);
+    window->DrawList->AddRectFilled(p_min, p_max-ImVec2(+0.1+1,0.1), fill_col, rounding);
     const float border_size = g.Style.FrameBorderSize;
     if (border && border_size > 0.0f)
     {
