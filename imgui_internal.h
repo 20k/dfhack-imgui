@@ -1507,6 +1507,7 @@ struct ImGuiContext
     int                     WantCaptureKeyboardNextFrame;
     int                     WantTextInputNextFrame;
     char                    TempBuffer[1024 * 3 + 1];           // Temporary text buffer
+    void*                   UserData;
 
     ImGuiContext(ImFontAtlas* shared_font_atlas)
     {
@@ -1643,6 +1644,7 @@ struct ImGuiContext
         LogLineFirstItem = false;
         LogDepthRef = 0;
         LogDepthToExpand = LogDepthToExpandDefault = 2;
+        UserData = nullptr;
 
         DebugItemPickerActive = false;
         DebugItemPickerBreakId = 0;
