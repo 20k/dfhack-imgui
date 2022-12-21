@@ -8651,7 +8651,7 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
         quadrant = (window->DC.LastItemId < g.NavId) ? ImGuiDir_Left : ImGuiDir_Right;
     }
 
-#define NAV_PENALTY
+//#define NAV_PENALTY
 #ifdef NAV_PENALTY
     float max_penalty = 40;
 

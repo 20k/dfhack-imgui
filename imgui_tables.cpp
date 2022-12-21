@@ -2462,7 +2462,7 @@ void ImGui::TableDrawBorders(ImGuiTable* table)
             if (draw_y2 > draw_y1) {
                 //inner_drawlist->AddLine(ImVec2(column->MaxX, draw_y1), ImVec2(column->MaxX, draw_y2 - 1.0f), col, 0.1f);
                 for (int y = draw_y1; y < draw_y2; ++y) {
-                    inner_drawlist->AddText(ImVec2(column->MaxX - 0.1f, y), col, "|");
+                    inner_drawlist->AddText(ImVec2(column->MaxX, y), col, "|");
                 }
             }
         }
