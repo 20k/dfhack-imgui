@@ -4411,7 +4411,7 @@ void ImGui::EndFrame()
     CallContextHooks(&g, ImGuiContextHookType_EndFramePost);
 }
 
-void ImGui::ProgressiveRender(const std::vector<std::string>& windows)
+void ImGui::ProgressiveRender(const std::vector<std::string>& windows, std::set<std::string>& rendered, bool final_draw)
 {
     /*ImGuiViewportP* viewport = g.Viewports[n];
     viewport->DrawDataBuilder.Clear();
@@ -4425,8 +4425,6 @@ void ImGui::ProgressiveRender(const std::vector<std::string>& windows)
     windows_to_render_top_most[1] = (g.NavWindowingTarget ? g.NavWindowingListWindow : NULL);
 
     std::set<std::string> set_windows(windows.begin(), windows.end());
-
-    //start = 0;
 
     // Add background ImDrawList (for each active viewport)
     for (int n = 0; n != g.Viewports.Size; n++)
@@ -4443,12 +4441,23 @@ void ImGui::ProgressiveRender(const std::vector<std::string>& windows)
 
         std::string sname(window->Name);
 
-        if (set_windows.count(sname) == 0)
+        if (set_windows.count(sname) == 0 && !final_draw)
             continue;
+
+        if (rendered.count(sname) > 0)
+            continue;
+
+        rendered.insert(sname);
+        //unrendered.erase(sname);
 
         if (IsWindowActiveAndVisible(window) && (window->Flags & ImGuiWindowFlags_ChildWindow) == 0 && window != windows_to_render_top_most[0] && window != windows_to_render_top_most[1])
             AddRootWindowToDrawData(window);
     }
+
+    if(final_draw)
+        for (int n = 0; n < IM_ARRAYSIZE(windows_to_render_top_most); n++)
+            if (windows_to_render_top_most[n] && IsWindowActiveAndVisible(windows_to_render_top_most[n])) // NavWindowingTarget is always temporarily displayed as the top-most window
+                AddRootWindowToDrawData(windows_to_render_top_most[n]);
 
     for (int n = 0; n < g.Viewports.Size; n++)
     {
@@ -4456,8 +4465,8 @@ void ImGui::ProgressiveRender(const std::vector<std::string>& windows)
         viewport->DrawDataBuilder.FlattenIntoSingleLayer();
 
         // Add foreground ImDrawList (for each active viewport)
-        //if (viewport->DrawLists[1] != NULL)
-        //    AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetForegroundDrawList(viewport));
+        if (viewport->DrawLists[1] != NULL && final_draw)
+            AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetForegroundDrawList(viewport));
 
         SetupViewportDrawData(viewport, &viewport->DrawDataBuilder.Layers[0]);
         ImDrawData* draw_data = &viewport->DrawDataP;
