@@ -762,6 +762,8 @@ CODE
 #include <stdint.h>     // intptr_t
 #endif
 
+#include <set>
+
 // [Windows] OS specific includes (optional)
 #if defined(_WIN32) && defined(IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS) && defined(IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS) && defined(IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #define IMGUI_DISABLE_WIN32_FUNCTIONS
@@ -4407,6 +4409,59 @@ void ImGui::EndFrame()
     memset(g.IO.NavInputs, 0, sizeof(g.IO.NavInputs));
 
     CallContextHooks(&g, ImGuiContextHookType_EndFramePost);
+}
+
+void ImGui::ProgressiveRender(const std::vector<std::string>& windows)
+{
+    /*ImGuiViewportP* viewport = g.Viewports[n];
+    viewport->DrawDataBuilder.Clear();
+    if (viewport->DrawLists[0] != NULL)
+        AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetBackgroundDrawList(viewport));*/
+
+    ImGuiContext& g = *GImGui;
+
+    ImGuiWindow* windows_to_render_top_most[2];
+    windows_to_render_top_most[0] = (g.NavWindowingTarget && !(g.NavWindowingTarget->Flags & ImGuiWindowFlags_NoBringToFrontOnFocus)) ? g.NavWindowingTarget->RootWindow : NULL;
+    windows_to_render_top_most[1] = (g.NavWindowingTarget ? g.NavWindowingListWindow : NULL);
+
+    std::set<std::string> set_windows(windows.begin(), windows.end());
+
+    //start = 0;
+
+    // Add background ImDrawList (for each active viewport)
+    for (int n = 0; n != g.Viewports.Size; n++)
+    {
+        ImGuiViewportP* viewport = g.Viewports[n];
+        viewport->DrawDataBuilder.Clear();
+        //if (viewport->DrawLists[0] != NULL)
+        //    AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetBackgroundDrawList(viewport));
+    }
+
+    for (int n = 0; n != g.Windows.Size; n++)
+    {
+        ImGuiWindow* window = g.Windows[n];
+
+        std::string sname(window->Name);
+
+        if (set_windows.count(sname) == 0)
+            continue;
+
+        if (IsWindowActiveAndVisible(window) && (window->Flags & ImGuiWindowFlags_ChildWindow) == 0 && window != windows_to_render_top_most[0] && window != windows_to_render_top_most[1])
+            AddRootWindowToDrawData(window);
+    }
+
+    for (int n = 0; n < g.Viewports.Size; n++)
+    {
+        ImGuiViewportP* viewport = g.Viewports[n];
+        viewport->DrawDataBuilder.FlattenIntoSingleLayer();
+
+        // Add foreground ImDrawList (for each active viewport)
+        //if (viewport->DrawLists[1] != NULL)
+        //    AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetForegroundDrawList(viewport));
+
+        SetupViewportDrawData(viewport, &viewport->DrawDataBuilder.Layers[0]);
+        ImDrawData* draw_data = &viewport->DrawDataP;
+    }
 }
 
 void ImGui::Render()
