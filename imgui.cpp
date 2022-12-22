@@ -4447,6 +4447,9 @@ void ImGui::ProgressiveRender(const std::vector<std::string>& windows, std::set<
         if (rendered.count(sname) > 0)
             continue;
 
+        if (window->IsFallbackWindow && !window->WriteAccessed)
+            continue;
+
         rendered.insert(sname);
         //unrendered.erase(sname);
 
