@@ -4411,7 +4411,66 @@ void ImGui::EndFrame()
     CallContextHooks(&g, ImGuiContextHookType_EndFramePost);
 }
 
-void ImGui::ProgressiveRender(const std::vector<std::string>& windows, std::set<std::string>& rendered, bool final_draw)
+void ImGui::SortWindows(std::vector<ImGuiWindow*>& windows)
+{
+    //Child sorting
+    ImVector<ImGuiWindow*> WindowsTempSortBuffer;
+
+    // Sort the window list so that all child windows are after their parent
+    // We cannot do that on FocusWindow() because children may not exist yet
+    WindowsTempSortBuffer.resize(0);
+    WindowsTempSortBuffer.reserve(windows.size());
+    for (int i = 0; i != (int)windows.size(); i++)
+    {
+        ImGuiWindow* window = windows[i];
+        if (window->Active && (window->Flags & ImGuiWindowFlags_ChildWindow))       // if a child is active its parent will add it
+            continue;
+        AddWindowToSortBuffer(&WindowsTempSortBuffer, window);
+    }
+
+    // This usually assert if there is a mismatch between the ImGuiWindowFlags_ChildWindow / ParentWindow values and DC.ChildWindows[] in parents, aka we've done something wrong.
+    //IM_ASSERT(g.Windows.Size == g.WindowsTempSortBuffer.Size);
+    //g.Windows.swap(g.WindowsTempSortBuffer);
+
+    windows.clear();
+
+    for (int i = 0; i < WindowsTempSortBuffer.Size; i++)
+    {
+        windows.push_back(WindowsTempSortBuffer[i]);
+    }
+}
+
+/*
+void ImGui::BringWindowToFocusFront(ImGuiWindow* window)
+{
+    ImGuiContext& g = *GImGui;
+    if (g.WindowsFocusOrder.back() == window)
+        return;
+    for (int i = g.WindowsFocusOrder.Size - 2; i >= 0; i--) // We can ignore the top-most window
+        if (g.WindowsFocusOrder[i] == window)
+        {
+            memmove(&g.WindowsFocusOrder[i], &g.WindowsFocusOrder[i + 1], (size_t)(g.WindowsFocusOrder.Size - i - 1) * sizeof(ImGuiWindow*));
+            g.WindowsFocusOrder[g.WindowsFocusOrder.Size - 1] = window;
+            break;
+        }
+}
+
+void ImGui::BringWindowToDisplayFront(ImGuiWindow* window)
+{
+    ImGuiContext& g = *GImGui;
+    ImGuiWindow* current_front_window = g.Windows.back();
+    if (current_front_window == window || current_front_window->RootWindow == window) // Cheap early out (could be better)
+        return;
+    for (int i = g.Windows.Size - 2; i >= 0; i--) // We can ignore the top-most window
+        if (g.Windows[i] == window)
+        {
+            memmove(&g.Windows[i], &g.Windows[i + 1], (size_t)(g.Windows.Size - i - 1) * sizeof(ImGuiWindow*));
+            g.Windows[g.Windows.Size - 1] = window;
+            break;
+        }
+}*/
+
+void ImGui::ProgressiveRender(const std::vector<ImGuiWindow*>& windows, std::set<std::string>& rendered, bool final_draw)
 {
     /*ImGuiViewportP* viewport = g.Viewports[n];
     viewport->DrawDataBuilder.Clear();
@@ -4424,7 +4483,7 @@ void ImGui::ProgressiveRender(const std::vector<std::string>& windows, std::set<
     windows_to_render_top_most[0] = (g.NavWindowingTarget && !(g.NavWindowingTarget->Flags & ImGuiWindowFlags_NoBringToFrontOnFocus)) ? g.NavWindowingTarget->RootWindow : NULL;
     windows_to_render_top_most[1] = (g.NavWindowingTarget ? g.NavWindowingListWindow : NULL);
 
-    std::set<std::string> set_windows(windows.begin(), windows.end());
+    //std::set<ImGuiWindow*> set_windows(windows.begin(), windows.end());
 
     // Add background ImDrawList (for each active viewport)
     for (int n = 0; n != g.Viewports.Size; n++)
@@ -4435,14 +4494,11 @@ void ImGui::ProgressiveRender(const std::vector<std::string>& windows, std::set<
         //    AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetBackgroundDrawList(viewport));
     }
 
-    for (int n = 0; n != g.Windows.Size; n++)
+    for (int n = 0; n != windows.size(); n++)
     {
-        ImGuiWindow* window = g.Windows[n];
+        ImGuiWindow* window = windows[n];
 
         std::string sname(window->Name);
-
-        if (set_windows.count(sname) == 0 && !final_draw)
-            continue;
 
         if (rendered.count(sname) > 0)
             continue;
