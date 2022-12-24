@@ -59,6 +59,7 @@ Index of this file:
 #include <vector>
 #include <string>
 #include <set>
+#include <array>
 
 // Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals. Work in progress versions typically starts at XYY99 then bounce up to XYY00, XYY01 etc. when release tagging happens)
@@ -2277,6 +2278,9 @@ typedef unsigned short ImDrawIdx;
 #ifndef IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT
 struct ImDrawVert
 {
+    //Imtuis fork stuffed the original character in the colour
+    //But that is inadequate
+    std::array<char, 5> chrs;
     ImVec2  pos;
     ImVec2  uv;
     ImU32   col;

@@ -3412,6 +3412,8 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
             }
         }
 
+        const char* in_ptr = s;
+
         // Decode and advance source
         unsigned int c = (unsigned int)*s;
         if (c < 0x80)
@@ -3424,6 +3426,10 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
             if (c == 0) // Malformed UTF-8?
                 break;
         }
+
+        int len = s - in_ptr;
+
+        std::string utf8_source(in_ptr, len);
 
         if (c < 32)
         {
@@ -3448,7 +3454,7 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
         {
             // We don't do a second finer clipping test on the Y axis as we've already skipped anything before clip_rect.y and exit once we pass clip_rect.w
             float x1 = x;
-            float x2 = x + 1.0;
+            float x2 = x + 1.0f;
             float y1 = y - 0.5f;
             float y2 = y - 0.5f;
             if (x1 <= clip_rect.z && x2 >= clip_rect.x)
@@ -3489,10 +3495,12 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
                     }
                 }
 
-                col &= 0x00FFFFFF;
-                col |= (c << 24);
+                //col &= 0x00FFFFFF;
+                //col |= (c << 24);
                 // Support for untinted glyphs
-                ImU32 glyph_col = glyph->Colored ? col_untinted : col;
+                //ImU32 glyph_col = glyph->Colored ? col_untinted : col;
+
+                ImU32 glyph_col = col;
 
                 // We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
                 {
@@ -3502,6 +3510,15 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
                     vtx_write[1].pos.x = x2; vtx_write[1].pos.y = y1; vtx_write[1].col = glyph_col; vtx_write[1].uv.x = u2; vtx_write[1].uv.y = v1;
                     vtx_write[2].pos.x = x2; vtx_write[2].pos.y = y2; vtx_write[2].col = glyph_col; vtx_write[2].uv.x = u2; vtx_write[2].uv.y = v2;
                     vtx_write[3].pos.x = x1; vtx_write[3].pos.y = y2; vtx_write[3].col = glyph_col; vtx_write[3].uv.x = u1; vtx_write[3].uv.y = v2;
+
+                    assert(utf8_source.size() <= 4);
+
+                    vtx_write[0].chrs = {};
+                    for (int i = 0; i < (int)utf8_source.size(); i++)
+                    {
+                        vtx_write[0].chrs[i] = utf8_source[i];
+                    }
+
                     vtx_write += 4;
                     vtx_current_idx += 4;
                     idx_write += 6;
