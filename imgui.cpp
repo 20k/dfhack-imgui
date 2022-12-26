@@ -4494,7 +4494,7 @@ void ImGui::ProgressiveRender(const std::vector<ImGuiWindow*>& windows, std::set
         //    AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetBackgroundDrawList(viewport));
     }
 
-    for (int n = 0; n != windows.size(); n++)
+    for (int n = 0; n != (int)windows.size(); n++)
     {
         ImGuiWindow* window = windows[n];
 
@@ -4528,7 +4528,6 @@ void ImGui::ProgressiveRender(const std::vector<ImGuiWindow*>& windows, std::set
             AddDrawListToDrawData(&viewport->DrawDataBuilder.Layers[0], GetForegroundDrawList(viewport));
 
         SetupViewportDrawData(viewport, &viewport->DrawDataBuilder.Layers[0]);
-        ImDrawData* draw_data = &viewport->DrawDataP;
     }
 }
 
@@ -8734,20 +8733,6 @@ static bool ImGui::NavScoreItem(ImGuiNavMoveResult* result, ImRect cand)
     float dcx = (cand.Min.x + cand.Max.x) / 2 - (curr.Min.x + curr.Max.x) / 2;
     float dcy = (cand.Min.y + cand.Max.y) / 2 - (curr.Min.y + curr.Max.y) / 2;
     float dist_center = ImFabs(dcx) + ImFabs(dcy); // L1 metric (need this for our connectedness guarantee)
-
-    //ImSwap(dbx, dcx);
-    //ImSwap(dby, dcy);
-    //ImSwap(dist_box, dist_center);
-
-    ImDrawList* draw_list = GetForegroundDrawList(window);
-    //draw_list->AddRect(curr.Min, curr.Max, IM_COL32(255, 200, 0, 100));
-
-    //if (IsMouseHoveringRect(cand.Min, cand.Max))
-    {
-        // draw_list->AddText({ (cand.Min.x + cand.Max.x) / 2.f, (cand.Min.y + cand.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), "G");
-
-         //draw_list->AddText({ (curr.Min.x + curr.Max.x) / 2.f, (curr.Min.y + curr.Max.y) / 2.f }, ImGui::ColorConvertFloat4ToU32(ImVec4(15.f, 15.f, 0, 1.f)), "C");
-    }
 
     // Determine which quadrant of 'curr' our candidate item 'cand' lies in based on distance
     ImGuiDir quadrant;

@@ -3382,7 +3382,7 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
     ImDrawIdx* idx_write = draw_list->_IdxWritePtr;
     unsigned int vtx_current_idx = draw_list->_VtxCurrentIdx;
 
-    const ImU32 col_untinted = col | ~IM_COL32_A_MASK;
+    //const ImU32 col_untinted = col | ~IM_COL32_A_MASK;
 
     while (s < text_end)
     {
