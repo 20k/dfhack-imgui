@@ -2532,7 +2532,7 @@ static void ImFontAtlasBuildRenderLinesTexData(ImFontAtlas* atlas)
             unsigned char* write_ptr = &atlas->TexPixelsAlpha8[r->X + ((r->Y + y) * atlas->TexWidth)];
             for (unsigned int i = 0; i < pad_left; i++)
                 *(write_ptr + i) = 0x00;
-            
+
             for (unsigned int i = 0; i < line_width; i++)
                 *(write_ptr + pad_left + i) = 0xFF;
 
@@ -2544,7 +2544,7 @@ static void ImFontAtlasBuildRenderLinesTexData(ImFontAtlas* atlas)
             unsigned int* write_ptr = &atlas->TexPixelsRGBA32[r->X + ((r->Y + y) * atlas->TexWidth)];
             for (unsigned int i = 0; i < pad_left; i++)
                 *(write_ptr + i) = IM_COL32_BLACK_TRANS;
-            
+
             for (unsigned int i = 0; i < line_width; i++)
                 *(write_ptr + pad_left + i) = IM_COL32_WHITE;
 
@@ -3556,7 +3556,7 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
 void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
 {
     const float h = draw_list->_Data->FontSize * 1.00f;
-    float r = h * 0.40f * scale;
+    //float r = h * 0.40f * scale;
     ImVec2 center = pos;
 
     ImVec2 a, b, c;
@@ -3601,8 +3601,8 @@ void ImGui::RenderCheckMark(ImDrawList* draw_list, ImVec2 pos, ImU32 col, float 
     pos += ImVec2(thickness*0.25f, thickness*0.25f);
 
     float third = sz / 3.0f;
-    float bx = pos.x + third;
-    float by = pos.y + sz - third*0.5f;
+    //float bx = pos.x + third;
+    //float by = pos.y + sz - third*0.5f;
     //draw_list->PathLineTo(ImVec2(bx - third, by - third));
     //draw_list->PathLineTo(ImVec2(bx, by));
     //draw_list->PathLineTo(ImVec2(bx + third*2, by - third*2));
