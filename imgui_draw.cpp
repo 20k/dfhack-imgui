@@ -3555,7 +3555,8 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
 // Render an arrow aimed to be aligned with text (p_min is a position in the same space text would be positioned). To e.g. denote expanded/collapsed state
 void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
 {
-    const float h = draw_list->_Data->FontSize * 1.00f;
+    (void)scale;
+    //const float h = draw_list->_Data->FontSize * 1.00f;
     //float r = h * 0.40f * scale;
     ImVec2 center = pos;
 
@@ -3600,7 +3601,7 @@ void ImGui::RenderCheckMark(ImDrawList* draw_list, ImVec2 pos, ImU32 col, float 
     sz -= thickness*0.5f;
     pos += ImVec2(thickness*0.25f, thickness*0.25f);
 
-    float third = sz / 3.0f;
+    //float third = sz / 3.0f;
     //float bx = pos.x + third;
     //float by = pos.y + sz - third*0.5f;
     //draw_list->PathLineTo(ImVec2(bx - third, by - third));
