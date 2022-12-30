@@ -1203,7 +1203,7 @@ bool ImGui::RadioButton(const char* label, bool active)
     window->DrawList->AddCircleFilled(center + ImVec2(+0.5, -0.5), 0.1f, GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), 16);
     if (active)
     {
-        const float pad = ImMax(1.0f, IM_FLOOR(square_sz / 6.0f));
+        //const float pad = ImMax(1.0f, IM_FLOOR(square_sz / 6.0f));
         //window->DrawList->AddCircleFilled(center, radius - pad, GetColorU32(ImGuiCol_CheckMark), 16);
         window->DrawList->AddText(center + ImVec2(-1, -1), GetColorU32(ImGuiCol_CheckMark), "x");
     }
@@ -6599,7 +6599,7 @@ bool ImGui::BeginMainMenuBar()
     if (menu_bar_window == NULL || menu_bar_window->BeginCount == 0)
     {
         // Set window position
-        // We don't attempt to calculate our height ahead, as it depends on the per-viewport font size. 
+        // We don't attempt to calculate our height ahead, as it depends on the per-viewport font size.
         // However menu-bar will affect the minimum window size so we'll get the right height.
         ImVec2 menu_bar_pos = viewport->Pos + viewport->CurrWorkOffsetMin;
         ImVec2 menu_bar_size = ImVec2(viewport->Size.x - viewport->CurrWorkOffsetMin.x + viewport->CurrWorkOffsetMax.x, 1.0f);
@@ -7023,11 +7023,11 @@ bool    ImGui::BeginTabBarEx(ImGuiTabBar* tab_bar, const ImRect& tab_bar_bb, ImG
     window->DC.CursorPos = ImVec2(tab_bar->BarRect.Min.x, tab_bar->BarRect.Max.y + tab_bar->ItemSpacingY);
 
     // Draw separator
-    const ImU32 col = GetColorU32((flags & ImGuiTabBarFlags_IsFocused) ? ImGuiCol_TabActive : ImGuiCol_TabUnfocusedActive);
-    const float y = tab_bar->BarRect.Max.y - 1.0f;
+    //const ImU32 col = GetColorU32((flags & ImGuiTabBarFlags_IsFocused) ? ImGuiCol_TabActive : ImGuiCol_TabUnfocusedActive);
+    //const float y = tab_bar->BarRect.Max.y - 1.0f;
     {
-        const float separator_min_x = tab_bar->BarRect.Min.x - IM_FLOOR(window->WindowPadding.x * 0.5f);
-        const float separator_max_x = tab_bar->BarRect.Max.x + IM_FLOOR(window->WindowPadding.x * 0.5f);
+        //const float separator_min_x = tab_bar->BarRect.Min.x - IM_FLOOR(window->WindowPadding.x * 0.5f);
+        //const float separator_max_x = tab_bar->BarRect.Max.x + IM_FLOOR(window->WindowPadding.x * 0.5f);
         //window->DrawList->AddLine(ImVec2(separator_min_x, y), ImVec2(separator_max_x, y), col, 1.0f);
     }
     return true;
