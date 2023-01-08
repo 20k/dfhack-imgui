@@ -860,7 +860,15 @@ ImRect ImGui::GetWindowScrollbarRect(ImGuiWindow* window, ImGuiAxis axis)
     if (axis == ImGuiAxis_X)
         return ImRect(inner_rect.Min.x, ImMax(outer_rect.Min.y, outer_rect.Max.y - border_size - scrollbar_size), inner_rect.Max.x, outer_rect.Max.y);
     else
-        return ImRect(ImMax(outer_rect.Min.x, outer_rect.Max.x - border_size - scrollbar_size), inner_rect.Min.y, outer_rect.Max.x - 0.1f, inner_rect.Max.y);
+    {
+        float l_x = floor(ImMax(outer_rect.Min.x, outer_rect.Max.x - border_size - scrollbar_size));
+        float r_x = floor(outer_rect.Max.x);
+
+        float t_y = floor(inner_rect.Min.y);
+        float b_y = floor(inner_rect.Max.y);
+
+        return ImRect(l_x, t_y, r_x, b_y);
+    }
 }
 
 void ImGui::Scrollbar(ImGuiAxis axis)
@@ -978,13 +986,13 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, floa
     // Render
     const ImU32 bg_col = GetColorU32(ImGuiCol_ScrollbarBg);
     const ImU32 grab_col = GetColorU32(held ? ImGuiCol_ScrollbarGrabActive : hovered ? ImGuiCol_ScrollbarGrabHovered : ImGuiCol_ScrollbarGrab, alpha);
-    window->DrawList->AddRectFilled(bb_frame.Min, bb_frame.Max, bg_col, window->WindowRounding, rounding_corners);
+    window->DrawList->AddRectFilled(bb_frame.Min, bb_frame.Max - ImVec2(1,1), bg_col, window->WindowRounding, rounding_corners);
     ImRect grab_rect;
     if (axis == ImGuiAxis_X)
         grab_rect = ImRect(ImLerp(bb.Min.x, bb.Max.x, grab_v_norm), bb.Min.y, ImLerp(bb.Min.x, bb.Max.x, grab_v_norm) + grab_h_pixels, bb.Max.y);
     else
         grab_rect = ImRect(bb.Min.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm), bb.Max.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm) + grab_h_pixels);
-    window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, grab_col, style.ScrollbarRounding);
+    window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max - ImVec2(1,1), grab_col, style.ScrollbarRounding);
 
     return held;
 }
