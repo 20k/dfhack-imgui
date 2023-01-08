@@ -8652,7 +8652,10 @@ ImVec2 ImGui::FindBestWindowPosForPopup(ImGuiWindow* window)
             r_avoid = ImRect(ref_pos.x - 3, ref_pos.y - 3, ref_pos.x + 3 * sc, ref_pos.y + 3 * sc); // FIXME: Hard-coded based on mouse cursor shape expectation. Exact dimension not very important.
         return FindBestWindowPosForPopupEx(ref_pos, window->Size, &window->AutoPosLastDirection, r_outer, r_avoid, ImGuiPopupPositionPolicy_Tooltip);*/
 
-        return NavCalcPreferredRefPos() + ImVec2(3.f, 1.f);
+        if (ImGui::GetStyle().WindowBorderAscii)
+            return NavCalcPreferredRefPos() + ImVec2(3.f, 2.f);
+        else
+            return NavCalcPreferredRefPos() + ImVec2(3.f, 1.f);
     }
     IM_ASSERT(0);
     return window->Pos;
