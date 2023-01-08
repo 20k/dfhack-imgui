@@ -5644,21 +5644,44 @@ void ImGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_bar
 
         // Ascii borders
         if (style.WindowBorderAscii) {
+            #define USE_BOX_CHARS
+            #ifndef USE_BOX_CHARS
+            const char* tl = "/";
+            const char* tr = "\\";
+            const char* br = "/";
+            const char* bl = "\\";
+
+            const char* r = "|";
+            const char* l = "|";
+            const char* t = "-";
+            const char* b = "-";
+            #else
+            const char* tl = "╔";
+            const char* tr = "╗";
+            const char* br = "╝";
+            const char* bl = "╚";
+
+            const char* r = "║";
+            const char* l = "║";
+            const char* t = "═";
+            const char* b = "═";
+            #endif
+
             int top_offset = 0;
 
-            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBL), "\\");
-            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBR), "/");
+            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBL), bl);
+            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBR), br);
 
-            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTL), "/");
-            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTR), "\\");
+            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTL), tl);
+            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTR), tr);
 
             for (int i = 0; i < window->Size.x; ++i) {
-                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderB), "-");
-                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderT), "-");
+                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderB), b);
+                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderT), t);
             }
             for (int i = 1 - top_offset; i < window->Size.y; ++i) {
-                window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderL), "|");
-                window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderR), "|");
+                window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderL), l);
+                window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderR), r);
             }
         }
 
