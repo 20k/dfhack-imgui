@@ -5669,11 +5669,8 @@ void ImGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_bar
 
             int top_offset = 0;
 
-            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBL), bl);
-            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBR), br);
-
-            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTL), tl);
-            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTR), tr);
+            if (flags & ImGuiWindowFlags_NoTitleBar)
+                top_offset = 1;
 
             for (int i = 0; i < window->Size.x; ++i) {
                 window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderB), b);
@@ -5683,6 +5680,12 @@ void ImGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_bar
                 window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderL), l);
                 window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderR), r);
             }
+
+            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBL), bl);
+            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBR), br);
+
+            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTL), tl);
+            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTR), tr);
         }
 
         // Render resize grips (after their input handling so we don't have a frame of latency)
