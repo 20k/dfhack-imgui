@@ -3450,7 +3450,7 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
             continue;
 
         float char_width = glyph->AdvanceX * scale;
-        if (glyph->Visible)
+        //if (glyph->Visible)
         {
             // We don't do a second finer clipping test on the Y axis as we've already skipped anything before clip_rect.y and exit once we pass clip_rect.w
             float x1 = x;

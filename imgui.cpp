@@ -5644,14 +5644,21 @@ void ImGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_bar
 
         // Ascii borders
         if (style.WindowBorderAscii) {
-            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + window->Size.y - 1), GetColorU32(ImGuiCol_WindowAsciiBorder), "\\");
-            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x - 2, window->Pos.y + window->Size.y - 1), GetColorU32(ImGuiCol_WindowAsciiBorder), "/");
-            for (int i = 0; i < window->Size.x - 2; ++i) {
-                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y + window->Size.y - 1), GetColorU32(ImGuiCol_WindowAsciiBorder), "-");
+            int top_offset = 0;
+
+            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBL), "\\");
+            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderBR), "/");
+
+            window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTL), "/");
+            window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderTR), "\\");
+
+            for (int i = 0; i < window->Size.x; ++i) {
+                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y + window->Size.y), GetColorU32(ImGuiCol_WindowAsciiBorderB), "-");
+                window->DrawList->AddText(ImVec2(window->Pos.x + i, window->Pos.y - top_offset), GetColorU32(ImGuiCol_WindowAsciiBorderT), "-");
             }
-            for (int i = 1; i < window->Size.y - 1; ++i) {
-                window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorder), "|");
-                window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x - 2, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorder), "|");
+            for (int i = 1 - top_offset; i < window->Size.y; ++i) {
+                window->DrawList->AddText(ImVec2(window->Pos.x - 1, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderL), "|");
+                window->DrawList->AddText(ImVec2(window->Pos.x + window->Size.x, window->Pos.y + i), GetColorU32(ImGuiCol_WindowAsciiBorderR), "|");
             }
         }
 
@@ -5750,6 +5757,9 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
     ImRect clip_r(layout_r.Min.x, layout_r.Min.y, ImMin(layout_r.Max.x + g.Style.ItemInnerSpacing.x - 2.1f, title_bar_rect.Max.x), layout_r.Max.y);
     //if (g.IO.KeyShift) window->DrawList->AddRect(layout_r.Min, layout_r.Max, IM_COL32(255, 128, 0, 255)); // [DEBUG]
     //if (g.IO.KeyCtrl) window->DrawList->AddRect(clip_r.Min, clip_r.Max, IM_COL32(255, 128, 0, 255)); // [DEBUG]
+
+    PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TitleBarText));
+
     RenderTextClipped(layout_r.Min, layout_r.Max, name, NULL, &text_size, style.WindowTitleAlign, &clip_r);
     if (flags & ImGuiWindowFlags_UnsavedDocument)
     {
@@ -5757,6 +5767,8 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
         ImVec2 off = ImVec2(0.0f, IM_FLOOR(-g.FontSize * 0.25f));
         RenderTextClipped(marker_pos + off, layout_r.Max + off, UNSAVED_DOCUMENT_MARKER, NULL, NULL, ImVec2(0, style.WindowTitleAlign.y), &clip_r);
     }
+
+    PopStyleColor(1);
 }
 
 void ImGui::UpdateWindowParentAndRootLinks(ImGuiWindow* window, ImGuiWindowFlags flags, ImGuiWindow* parent_window)
