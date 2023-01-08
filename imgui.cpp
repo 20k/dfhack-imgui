@@ -3603,7 +3603,7 @@ static void ImGui::UpdateMouseInputs()
 
     // Round mouse position to avoid spreading non-rounded position (e.g. UpdateManualResize doesn't support them well)
     if (IsMousePosValid(&g.IO.MousePos))
-        g.IO.MousePos = g.LastValidMousePos = ImFloor(g.IO.MousePos);
+        g.IO.MousePos = g.LastValidMousePos = g.IO.MousePos;
 
     // If mouse just appeared or disappeared (usually denoted by -FLT_MAX components) we cancel out movement in MouseDelta
     if (IsMousePosValid(&g.IO.MousePos) && IsMousePosValid(&g.IO.MousePosPrev))
@@ -11505,7 +11505,7 @@ void ImGui::DebugNodeViewport(ImGuiViewportP* viewport)
             viewport->Pos.x, viewport->Pos.y, viewport->Size.x, viewport->Size.y,
             viewport->WorkOffsetMin.x, viewport->WorkOffsetMin.y, viewport->WorkOffsetMax.x, viewport->WorkOffsetMax.y);
         BulletText("Flags: 0x%04X =%s%s%s", viewport->Flags,
-            (flags & ImGuiViewportFlags_IsPlatformWindow)  ? " IsPlatformWindow"  : "", 
+            (flags & ImGuiViewportFlags_IsPlatformWindow)  ? " IsPlatformWindow"  : "",
             (flags & ImGuiViewportFlags_IsPlatformMonitor) ? " IsPlatformMonitor" : "",
             (flags & ImGuiViewportFlags_OwnedByApp)        ? " OwnedByApp"        : "");
         for (int layer_i = 0; layer_i < IM_ARRAYSIZE(viewport->DrawDataBuilder.Layers); layer_i++)
